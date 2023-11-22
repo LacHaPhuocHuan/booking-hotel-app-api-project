@@ -4,6 +4,9 @@ import com.laptrinhweb.security.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Date;
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -23,6 +26,10 @@ public class User {
     private boolean isNonClocked;
     private boolean isEnabled;
     private Role role;
+    private SexEnum sex;
+    private Date dateOfBirth;
+    private String avatar;
+    private String address;
 
 
 }

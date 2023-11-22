@@ -2,6 +2,7 @@ package com.laptrinhweb.service.serviceImpl;
 
 import com.laptrinhweb.dto.AccessTokenJson;
 import com.laptrinhweb.dto.AuthenticationRequest;
+import com.laptrinhweb.dto.ChangePasswordRequest;
 import com.laptrinhweb.dto.RegisterRequest;
 import com.laptrinhweb.entity.JwtToken;
 import com.laptrinhweb.entity.User;
@@ -22,6 +23,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -84,8 +87,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         log.info("Authenticated! ");
         if(!validate(request))
             throw new BadCredentialsException("Email and password don't enclosed! ");
+        Authentication authentication=null;
+
         try {
-            Authentication authentication=authenticationManager.authenticate(
+            authentication =authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
             );
             if(authentication.getCredentials()==null){
@@ -113,6 +118,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         }catch (Exception e){
             e.printStackTrace();
+            if( authentication==null )
+                return  ResponseEntity.status(400).body("{\"message\":\"Authentication failed: no correct credentials provided \"}");
+
 
         }
 
@@ -142,9 +150,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
         return ResponseEntity.status(400).body("Refresh token is incorrect");
     }
-
-
-
 
 
 
@@ -188,6 +193,25 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 user.getPassword()==null||
                 user.getEmail()==null||
                 user.getFirstname()==null;
+    }
+
+
+
+    @Override
+    public ResponseEntity<?> changePassword(ChangePasswordRequest request) {
+        var userDetails= (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        log.info(userDetails.getUsername());
+        var user=repository.findByEmail(userDetails.getUsername()).orElseThrow(()->new RuntimeException("Server Error"));
+        Authentication authentication=authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(userDetails.getUsername(), request.oldPassword())
+        );
+        if(authentication.isAuthenticated())
+        {
+            user.setPassword(passwordEncoder.encode(request.newPassword()));
+            repository.save(user);
+            return  ResponseEntity.ok("Change password success.");
+        }
+        return ResponseEntity.status(400).body("Change password fail. Old Password is incorrect");
     }
 
 

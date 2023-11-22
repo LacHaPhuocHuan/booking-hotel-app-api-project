@@ -2,6 +2,7 @@ package com.laptrinhweb.service;
 
 
 import com.laptrinhweb.dto.AuthenticationRequest;
+import com.laptrinhweb.dto.ChangePasswordRequest;
 import com.laptrinhweb.dto.RegisterRequest;
 import com.laptrinhweb.exception.EmailExistedException;
 import com.laptrinhweb.exception.ServerErrorException;
@@ -16,4 +17,6 @@ public interface AuthenticationService {
     ResponseEntity<?> authenticate(AuthenticationRequest request);
 
     ResponseEntity<?> refresh(HttpServletRequest request);
+
+    ResponseEntity<?> changePassword(ChangePasswordRequest request);
 }

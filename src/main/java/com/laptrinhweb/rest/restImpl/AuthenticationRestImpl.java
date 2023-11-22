@@ -1,6 +1,7 @@
 package com.laptrinhweb.rest.restImpl;
 
 import com.laptrinhweb.dto.AuthenticationRequest;
+import com.laptrinhweb.dto.ChangePasswordRequest;
 import com.laptrinhweb.dto.RegisterRequest;
 import com.laptrinhweb.exception.EmailExistedException;
 import com.laptrinhweb.exception.ServerErrorException;
@@ -35,6 +36,11 @@ public class AuthenticationRestImpl implements AuthenticationRest {
     @Override
     public ResponseEntity<?> refresh(@NonNull HttpServletRequest request) {
         return service.refresh(request);
+    }
+
+    @Override
+    public ResponseEntity<?> changePassword(ChangePasswordRequest request) {
+        return service.changePassword(request);
     }
 
 
