@@ -5,6 +5,7 @@ import com.laptrinhweb.dto.ChangePasswordRequest;
 import com.laptrinhweb.dto.RegisterRequest;
 import com.laptrinhweb.exception.EmailExistedException;
 import com.laptrinhweb.exception.ServerErrorException;
+
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,15 +21,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.HashMap;
 
 @RequestMapping("/api/v1/auth")
+//@Api(value = "Hotel API", tags = "Authentication Operations")
 public interface AuthenticationRest {
     @PostMapping("/register")
-     ResponseEntity<?> register(@RequestBody RegisterRequest request) throws ServerErrorException, EmailExistedException;
+//    @ApiOperation(value = "Register User", notes = "Register a new user with the provided details.")
+    ResponseEntity<?> register(@RequestBody RegisterRequest request) throws ServerErrorException, EmailExistedException;
     @PostMapping("/authentication")
-     ResponseEntity<?> authenticate(@RequestBody AuthenticationRequest request);
+//    @ApiOperation(value = "User Authentication", notes = "Authenticate a user with the provided credentials.")
+    ResponseEntity<?> authenticate(@RequestBody AuthenticationRequest request);
 
     @PostMapping("/refresh")
-     ResponseEntity<?> refresh(@NonNull HttpServletRequest request);
+//    @ApiOperation(value = "Refresh Token", notes = "Refresh the authentication token.")
+    ResponseEntity<?> refresh(@NonNull HttpServletRequest request);
 
     @PutMapping("/change-password")
+//    @ApiOperation(value = "Change Password", notes = "Change the user's password.")
     ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest);
 }

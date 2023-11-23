@@ -33,11 +33,12 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf-> csrf.disable())
                 .authorizeHttpRequests( auth-> {
+                    auth.requestMatchers("/swagger-ui/**","/swagger-ui/","/swagger-ui" ).permitAll();
                     auth.requestMatchers("/api/v1/auth/**","/api/v1/auth" ).permitAll();
                     auth.requestMatchers("/api/v1/auth/change-password").authenticated();
                     auth.requestMatchers("/user").hasAnyRole(Role.USER.name(), Role.ADMIN.name());
                     auth.requestMatchers("/admin").hasAnyAuthority(Permission.admin_change.name());
-                    auth.anyRequest().authenticated();
+                    auth.anyRequest().permitAll();
                 });
         http.sessionManagement(session->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
