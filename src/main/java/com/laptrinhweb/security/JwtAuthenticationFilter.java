@@ -36,7 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
           @NonNull  FilterChain filterChain
     ) throws ServletException, IOException {
         String urlPermitAll=request.getServletPath();
-        if(urlPermitAll.contains("/api/v1/auth/") && !urlPermitAll.contains("change")){
+        if((urlPermitAll.contains("/api/v1/auth/") && !urlPermitAll.contains("change") )|| urlPermitAll.contains("swagger-ui") ){
             filterChain.doFilter(request,response);
             return;
         }
