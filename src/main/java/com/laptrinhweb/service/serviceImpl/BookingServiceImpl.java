@@ -3,8 +3,11 @@ package com.laptrinhweb.service.serviceImpl;
 import com.laptrinhweb.dto.BookingDto;
 import com.laptrinhweb.dto.HotelDto;
 import com.laptrinhweb.dto.ResponseData;
-import com.laptrinhweb.entity.BookingDetail;
+import com.laptrinhweb.entity.*;
 import com.laptrinhweb.repository.BookingDetailRepository;
+import com.laptrinhweb.repository.HotelRepository;
+import com.laptrinhweb.repository.RoomRepository;
+import com.laptrinhweb.repository.UserRepository;
 import com.laptrinhweb.service.IBookingService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -14,17 +17,57 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 public class BookingServiceImpl implements IBookingService{
     private final BookingDetailRepository bookingDetailRepository;
+    private final HotelRepository hotelRepository;
     private final ModelMapper modelMapper;
+    private final RoomRepository roomRepository;
+    private final UserRepository userRepository;
 
     @Override
     public ResponseEntity<?> bookHotel(Long hotelId, BookingDto bookingDto) {
-        return null;
+        UserDetails user=(UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal() ;
+        User u=userRepository.findByEmail(user.getUsername()).orElseThrow();
+        var booking=modelMapper.map(bookingDto, BookingDetail.class);
+        var rooms=roomRepository.findByHotelId(hotelId);
+        List<Room> lentRoom=new ArrayList<>();
+        List<RoomType> roomTypes=bookingDto.getRoomTypes();
+        for (Room room: rooms
+             ) {
+            if(roomTypes.contains(room.getRoomType())
+                    && room.getRoomStatus().equals(RoomStatus.VACANT)
+            ){
+                lentRoom.add(room);
+                room.setRoomStatus(RoomStatus.OCCUPIED);
+                roomTypes.remove(room.getRoomType());
+
+
+            }
+            if(roomTypes.size()==0 || roomTypes.isEmpty()) break;
+        }
+        if(roomTypes.size()>0)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    ResponseData.builder()
+                            .status(HttpStatus.BAD_REQUEST)
+                            .message("Fail! "+ roomTypes.toString() + "het phong")
+                            .build()
+            );
+//        booking.setRooms(rooms.stream().map(room -> room.getId()).toList());
+        booking.setUser(u);
+        bookingDetailRepository.save(booking);
+        roomRepository.saveAll(rooms);
+        return ResponseEntity.ok(
+                ResponseData.builder()
+                        .status(HttpStatus.OK)
+                        .message("Success")
+                        .build()
+        );
     }
 
     @Override

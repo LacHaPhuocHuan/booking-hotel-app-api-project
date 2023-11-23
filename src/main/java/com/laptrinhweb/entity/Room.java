@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
+
 @Entity
 @Table(name = "tbRoom")
 @Data
@@ -20,9 +22,13 @@ public class Room {
     private int floor;
     @Column(length = 100000)
     private String addintionalInformation;
+    @Enumerated(EnumType.STRING)
     private RoomType roomType;
     @ManyToOne
-    @JoinColumn(name = "booking_detail_id")
-    private BookingDetail bookingDetail;
+    @JoinColumn(name = "hotel_id")
+    private Hotel hotel;
+    @Enumerated(EnumType.STRING)
+    private RoomStatus roomStatus;
+
 
 }

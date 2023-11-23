@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/api/v1/booking")
 public interface BookingRest {
-    @PostMapping("/{id}")
+    @PostMapping("/{hotelId}")
     public ResponseEntity<?> bookHotel(@PathVariable("hotelId") Long hotelId, @RequestBody BookingDto bookingDto);
 
     @GetMapping("")

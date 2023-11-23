@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.mapping.Map;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -25,11 +26,9 @@ public class BookingDetail {
     private int adultsQuantity;
     private int childQuantity;
     private String phoneNumber;
+    @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
-    @OneToMany(mappedBy="bookingDetail")
-    private List<Room>rooms;
-    @ManyToOne
-    private Hotel hotel;
+    private List<Long>rooms;
     @ManyToOne
     private User user;
 }

@@ -22,5 +22,5 @@ public class BookingDto {
     private int childQuantity;
     private String phoneNumber;
     private PaymentMethod paymentMethod;
-    private List<RoomType> rooms;
+    private List<RoomType> roomTypes;
 }

@@ -18,6 +18,7 @@ public class ImageDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String img;
+    @Enumerated(EnumType.STRING)
     private ImgType imgType;
     @ManyToOne
     @JoinColumn(name = "hotel_id")
