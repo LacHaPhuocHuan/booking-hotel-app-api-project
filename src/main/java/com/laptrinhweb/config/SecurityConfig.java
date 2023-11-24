@@ -42,7 +42,9 @@ public class SecurityConfig {
                             "/webjars/**",
                             // -- Swagger UI v3 (OpenAPI)
                             "/v3/api-docs/**",
-                            "/swagger-ui/**"
+                            "/swagger-ui/**",
+                            "/api/v1/hotel/**",
+                            "/api/v1/hotel"
                     ).permitAll();
                     auth.requestMatchers("/api/v1/auth/**","/api/v1/auth" ).permitAll();
                     auth.requestMatchers("/api/v1/auth/change-password").authenticated();

@@ -27,4 +27,6 @@ public class Farvourite {
     @JoinColumn(name = "user_id")
     private User user;
 
+    private Boolean isFavourited;
+
 }

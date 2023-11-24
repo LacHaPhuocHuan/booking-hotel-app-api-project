@@ -2,7 +2,9 @@ package com.laptrinhweb.service.serviceImpl;
 
 import com.laptrinhweb.dto.HotelDto;
 import com.laptrinhweb.dto.ResponseData;
+import com.laptrinhweb.entity.Farvourite;
 import com.laptrinhweb.entity.Hotel;
+import com.laptrinhweb.repository.FarvouriteRepository;
 import com.laptrinhweb.repository.HotelRepository;
 import com.laptrinhweb.repository.ReviewRepository;
 import com.laptrinhweb.service.IHotelService;
@@ -11,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -24,6 +28,7 @@ public class HotelServiceImpl implements IHotelService {
     private final HotelRepository hotelRepository;
     private final ModelMapper modelMapper;
     private final ReviewRepository reviewRepository;
+    private final FarvouriteRepository farvouriteRepository;
     @Override
     public ResponseEntity<ResponseData> getAll() {
         var hotels =hotelRepository.findAll();
@@ -75,17 +80,24 @@ public class HotelServiceImpl implements IHotelService {
     @Override
     public ResponseEntity<?> getPopular() {
         List<Object[]> objects= hotelRepository.findHotelsWithMostReviews();
+        UserDetails userDetails= (UserDetails) SecurityContextHolder.getContext().getAuthentication().getCredentials();
+        List<Farvourite> favouritedInstanse=farvouriteRepository.findHotelByUserEmailAndIsFavourited(userDetails.getUsername(), true);
+        List<Hotel> farvouriteHotel=favouritedInstanse.stream().map(farvourite -> farvourite.getHotel()).toList();
+        var hotels=objects.stream().map( ob -> {
+            var ht= modelMapper.map(ob[0], Hotel.class); var hotelDto= modelMapper.map(ob[0], HotelDto.class);
+            hotelDto.setReviewQuantity(Integer.parseInt(ob[1].toString()));
+            if(farvouriteHotel.contains(ht))
+                hotelDto.setIsFavourited(true);
+            else  hotelDto.setIsFavourited(false);
+            return hotelDto;
+
+        }).toList();
 
         return ResponseEntity.ok(
                 ResponseData.builder()
                         .status(HttpStatus.OK)
                         .message("Success")
-                        .data(objects.stream().map( hotel -> {
-                            var hotelDto= modelMapper.map(hotel[0], HotelDto.class);
-                            hotelDto.setReviewQuantity(Integer.parseInt(hotel[1].toString()));
-                            return hotelDto;
-                                })
-                                .toList())
+                        .data(hotels)
                         .build()
         );
     }

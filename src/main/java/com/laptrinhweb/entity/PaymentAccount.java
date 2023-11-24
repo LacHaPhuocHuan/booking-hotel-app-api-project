@@ -21,10 +21,11 @@ public class PaymentAccount {
     private String carNumber;
     private String CVV;
     private String memberSince;
-    private String goodThru;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+    @Enumerated(EnumType.STRING)
+    private PaymentMethod paymentMethod;
 
 
 
