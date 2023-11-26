@@ -11,6 +11,7 @@ import com.laptrinhweb.exception.ServerErrorException;
 import com.laptrinhweb.repository.JwtTokenRepository;
 import com.laptrinhweb.repository.UserRepository;
 import com.laptrinhweb.security.JwtService;
+import com.laptrinhweb.security.Role;
 import com.laptrinhweb.security.TokenType;
 import com.laptrinhweb.service.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -57,6 +58,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             user.setNonClocked(true);
             user.setEnabled(true);
+            user.setRole(Role.USER);
 
             if(validateUserRequest(user))
                 throw new ServerErrorException("Server arisen bug!");
@@ -69,8 +71,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .token(jwt)
                     .tokenType(TokenType.BEARER)
                     .user(userDave)
-                    .isEnabled(false)
-                    .isNonExpired(false)
+                    .isEnabled(true)
+                    .isNonExpired(true)
                     .build();
             var tokenSave=jwtTokenRepository.save(token);
             var tokenRefresh=jwtService.generatedRefreshToken(userDave);
@@ -189,10 +191,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private boolean validateUserRequest(User user) {
         return user==null||
-                user.getRole()==null||
                 user.getPassword()==null||
-                user.getEmail()==null||
-                user.getFirstname()==null;
+                user.getEmail()==null;
     }
 
 

@@ -23,4 +23,6 @@ public class BookingDto {
     private String phoneNumber;
     private PaymentMethod paymentMethod;
     private List<RoomType> roomTypes;
+    private Double hotelRate;
+    private int reviewQuantity;
 }

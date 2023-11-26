@@ -4,10 +4,7 @@ import com.laptrinhweb.dto.BookingDto;
 import com.laptrinhweb.dto.HotelDto;
 import com.laptrinhweb.dto.ResponseData;
 import com.laptrinhweb.entity.*;
-import com.laptrinhweb.repository.BookingDetailRepository;
-import com.laptrinhweb.repository.HotelRepository;
-import com.laptrinhweb.repository.RoomRepository;
-import com.laptrinhweb.repository.UserRepository;
+import com.laptrinhweb.repository.*;
 import com.laptrinhweb.service.IBookingService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -29,6 +26,7 @@ public class BookingServiceImpl implements IBookingService{
     private final ModelMapper modelMapper;
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
+    private final ReviewRepository reviewRepository;
 
     @Override
     public ResponseEntity<?> bookHotel(Long hotelId, BookingDto bookingDto) {
@@ -78,7 +76,20 @@ public class BookingServiceImpl implements IBookingService{
                 ResponseData.builder()
                         .status(HttpStatus.OK)
                         .message("Success")
-                        .data(bookingDetails.stream().map(bookingDetail -> modelMapper.map(bookingDetail, BookingDto.class)).toList())
+                        .data(bookingDetails.stream()
+                                .map(bookingDetail -> modelMapper.map(bookingDetail, BookingDto.class))
+                                .peek(hotelDto -> {
+                                    List<Review> reviewList=reviewRepository.findByHotelId(hotelDto.getId());
+                                    double totalRate=0;
+                                    for (Review review: reviewList
+                                    ) {
+                                        totalRate=totalRate+review.getRate();
+                                    }
+                                    double rate=totalRate/reviewList.size();
+                                    hotelDto.setHotelRate(rate);
+                                    hotelDto.setReviewQuantity(reviewList.size());
+                                })
+                                .toList())
                         .build()
         );
     }
