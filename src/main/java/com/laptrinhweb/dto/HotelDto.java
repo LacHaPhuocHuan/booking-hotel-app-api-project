@@ -22,5 +22,6 @@ public class HotelDto {
     private List<ImageDto> imageDetails;
     private Integer reviewQuantity;
     private Boolean isFavourited;
+    private Double rate;
 
 }
