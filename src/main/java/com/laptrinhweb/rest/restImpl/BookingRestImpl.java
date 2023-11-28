@@ -18,8 +18,10 @@ public class BookingRestImpl implements BookingRest {
             return bookingService.bookHotel( hotelId,  bookingDto);
         }catch (Exception e){
             e.printStackTrace();
+            return ResponseEntity.status(500).body(ResponseData.builder().message(e.getMessage()).build());
+
+
         }
-        return ResponseEntity.status(500).body(ResponseData.builder().message("Server occur Problem").build());
     }
 
     @Override

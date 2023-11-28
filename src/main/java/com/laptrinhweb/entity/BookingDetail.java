@@ -31,4 +31,6 @@ public class BookingDetail {
     private List<Long>rooms;
     @ManyToOne
     private User user;
+    @ManyToOne
+    private Hotel hotel;
 }

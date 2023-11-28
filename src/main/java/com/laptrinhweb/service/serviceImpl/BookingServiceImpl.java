@@ -34,6 +34,7 @@ public class BookingServiceImpl implements IBookingService{
         User u=userRepository.findByEmail(user.getUsername()).orElseThrow();
         var booking=modelMapper.map(bookingDto, BookingDetail.class);
         var rooms=roomRepository.findByHotelId(hotelId);
+        var hotel=hotelRepository.findById(hotelId).orElseThrow();
         List<Room> lentRoom=new ArrayList<>();
         List<RoomType> roomTypes=bookingDto.getRoomTypes();
         for (Room room: rooms
@@ -58,6 +59,7 @@ public class BookingServiceImpl implements IBookingService{
             );
 //        booking.setRooms(rooms.stream().map(room -> room.getId()).toList());
         booking.setUser(u);
+        booking.setHotel(hotel);
         bookingDetailRepository.save(booking);
         roomRepository.saveAll(rooms);
         return ResponseEntity.ok(

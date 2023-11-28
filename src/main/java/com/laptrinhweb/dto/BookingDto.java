@@ -25,4 +25,6 @@ public class BookingDto {
     private List<RoomType> roomTypes;
     private Double hotelRate;
     private int reviewQuantity;
+    private int hotelId;
+
 }
