@@ -5,23 +5,31 @@ import com.laptrinhweb.dto.UserProfile;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.swing.plaf.PanelUI;
+import java.sql.Blob;
 
 @RequestMapping("/api/v1/user/profile")
-//@Api(value = "Hotel API", tags = "User Operations")
 
 public interface UserRest {
 
     @GetMapping("")
-//    @ApiOperation(value = "Get User Profile", notes = "Retrieve the user's profile.")
     public ResponseEntity<ResponseData> getProfile();
 
     @PostMapping("")
-//    @ApiOperation(value = "Set User Profile", notes = "Set the user's profile.")
-    public  ResponseEntity<ResponseData> setProfile(@RequestBody UserProfile userProfile);
+    public  ResponseEntity<ResponseData> setProfile(
+            @RequestBody UserProfile userProfile
+            );
+
+    @PostMapping("/avatar")
+    public  ResponseEntity<ResponseData> setAvatar(
+            @RequestParam("image")MultipartFile file
+            );
+
+    @GetMapping("/avatar")
+    public ResponseEntity<byte[]> getAvartar();
 
     @PatchMapping("")
-//    @ApiOperation(value = "Update User Profile", notes = "Update the user's profile.")
     public  ResponseEntity<ResponseData> updateProfile(@RequestBody UserProfile userProfile);
 }

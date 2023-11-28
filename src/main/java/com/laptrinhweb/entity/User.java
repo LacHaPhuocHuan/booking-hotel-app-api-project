@@ -28,8 +28,11 @@ public class User {
     private Role role;
     private SexEnum sex;
     private Date dateOfBirth;
-    private String avatar;
     private String address;
+    @OneToOne
+    @JoinColumn(name = "avatar_id", referencedColumnName = "id")
+    private Avatar avatarImg;
+
 
 
 }

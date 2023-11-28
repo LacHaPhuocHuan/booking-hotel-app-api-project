@@ -21,7 +21,8 @@ public class UserProfile {
     private String phone;
     private SexEnum sex;
     private Date dateOfBirth;
-    private String avatar;
+    private String avatarName;
+    private byte[] avatar;
     private String address;
 
 }
