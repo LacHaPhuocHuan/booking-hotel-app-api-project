@@ -4,8 +4,10 @@ import com.laptrinhweb.dto.HotelDto;
 import com.laptrinhweb.dto.ResponseData;
 import com.laptrinhweb.dto.ReviewDto;
 import com.laptrinhweb.dto.ReviewResponse;
+import com.laptrinhweb.entity.Avatar;
 import com.laptrinhweb.entity.Hotel;
 import com.laptrinhweb.entity.Review;
+import com.laptrinhweb.repository.AvatarRepository;
 import com.laptrinhweb.repository.HotelRepository;
 import com.laptrinhweb.repository.ReviewRepository;
 import com.laptrinhweb.repository.UserRepository;
@@ -19,6 +21,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.sql.Blob;
 import java.util.List;
 import java.util.Objects;
 
@@ -33,13 +36,34 @@ public class ReviewServiceImpl implements IReviewService {
     @Override
     public ResponseEntity<?> getReviewsByHotelId(Long hotelId) {
         List<Review> reviewList=reviewRepository.findByHotelId(hotelId);
+        var reviewDtos= reviewList.stream()
+                .map(review ->{
+                    var reviewsResponse= modelMapper.map(review, ReviewResponse.class);
+                    var user=review.getUser();
+                    reviewsResponse.setUsername(user.getFirstname()+ user.getLastname() );
+                    reviewsResponse.setAvatarImg(generateAvatar(user.getAvatarImg()));
+                    return reviewsResponse;
+                })
+                .toList();
+
         return ResponseEntity.ok(
                 ResponseData.builder()
                         .status(HttpStatus.OK)
                         .message("Success")
-                        .data(reviewList.stream().map(review -> modelMapper.map(review, ReviewResponse.class)).toList())
+                        .data(reviewDtos)
                         .build()
         );
+    }
+
+    private byte[] generateAvatar(Avatar avatarImg) {
+        try {
+            Blob blob = avatarImg.getImageData();
+            int lengnt = (int) blob.length();
+            return blob.getBytes(1,lengnt);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override

@@ -17,5 +17,8 @@ public class ReviewResponse {
     private Long id;
     private float rate;
     private String content;
+    private String username;
+    private byte[] avatarImg;
+
 
 }
