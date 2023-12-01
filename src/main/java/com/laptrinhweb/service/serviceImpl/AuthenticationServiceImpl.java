@@ -29,6 +29,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import utils.Validation;
 
 import java.util.HashMap;
 import java.util.List;
@@ -59,9 +60,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             user.setNonClocked(true);
             user.setEnabled(true);
             user.setRole(Role.USER);
-
+            user.setFirstname(user.getEmail());
             if(validateUserRequest(user))
-                throw new ServerErrorException("Server arisen bug!");
+                throw new ServerErrorException("Information is incorrect");
             User userByUsernameOnDB=repository.findByEmail(request.getEmail()).orElse(null);
             if( !Objects.isNull(userByUsernameOnDB))
                 throw new EmailExistedException("Email (username) existed! ");
@@ -190,9 +191,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     private boolean validateUserRequest(User user) {
-        return user==null||
-                user.getPassword()==null||
-                user.getEmail()==null;
+        return user==null &&
+                user.getPassword()==null &&
+                user.getEmail()==null &&
+                Validation.validaEmail(user.getEmail());
     }
 
 

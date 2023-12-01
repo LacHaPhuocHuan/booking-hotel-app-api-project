@@ -99,7 +99,7 @@ public class ReviewServiceImpl implements IReviewService {
                 .content(reviewDto.content())
                 .rate(reviewDto.rate()).build();
 
-        var user= (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var user= (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         review.setUser(userRepository.findByEmail(user.getUsername()).orElseThrow(()->new UsernameNotFoundException("")));
         review.setHotel(hotel);
         reviewRepository.save(review);
