@@ -61,7 +61,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             user.setEnabled(true);
             user.setRole(Role.USER);
             user.setFirstname(user.getEmail());
-            if(validateUserRequest(user))
+            if(!validateUserRequest(user))
                 throw new ServerErrorException("Information is incorrect");
             User userByUsernameOnDB=repository.findByEmail(request.getEmail()).orElse(null);
             if( !Objects.isNull(userByUsernameOnDB))
@@ -191,10 +191,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     private boolean validateUserRequest(User user) {
-        return user==null &&
-                user.getPassword()==null &&
-                user.getEmail()==null &&
-                Validation.validaEmail(user.getEmail());
+        log.info("Email: {}" ,Validation.validaEmail(user.getEmail()));
+        return Validation.validaEmail(user.getEmail()) && Objects.nonNull(user.getPassword());
     }
 
 
