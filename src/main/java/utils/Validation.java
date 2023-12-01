@@ -5,8 +5,9 @@ import java.util.regex.Pattern;
 
 public class Validation {
     public static Boolean validaEmail(String email){
-        Pattern pattern=Pattern.compile(ConstantUtils.EMAIL_REGEX);
-        return pattern.matcher(email).matches();
+        Pattern pattern = Pattern.compile(ConstantUtils.EMAIL_REGEX);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
     }
 
     public static Boolean validaPhone(String phone){
