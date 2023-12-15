@@ -7,6 +7,7 @@ import com.laptrinhweb.entity.*;
 import com.laptrinhweb.repository.*;
 import com.laptrinhweb.service.IBookingService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BookingServiceImpl implements IBookingService{
     private final BookingDetailRepository bookingDetailRepository;
     private final HotelRepository hotelRepository;
@@ -80,16 +82,18 @@ public class BookingServiceImpl implements IBookingService{
                         .message("Success")
                         .data(bookingDetails.stream()
                                 .map(bookingDetail -> modelMapper.map(bookingDetail, BookingDto.class))
-                                .peek(hotelDto -> {
-                                    List<Review> reviewList=reviewRepository.findByHotelId(hotelDto.getId());
+                                .peek(bookingDto -> {
+//                                    log.info("Hotel: {}", bookingDto.toString());
+                                    List<Review> reviewList=reviewRepository.findByHotelId((long) bookingDto.getHotelId());
+//                                    log.info("{}", reviewList.size());
                                     double totalRate=0;
                                     for (Review review: reviewList
                                     ) {
                                         totalRate=totalRate+review.getRate();
                                     }
                                     double rate=totalRate/reviewList.size();
-                                    hotelDto.setHotelRate(rate);
-                                    hotelDto.setReviewQuantity(reviewList.size());
+                                    bookingDto.setHotelRate(rate);
+                                    bookingDto.setReviewQuantity(reviewList.size());
                                 })
                                 .toList())
                         .build()
